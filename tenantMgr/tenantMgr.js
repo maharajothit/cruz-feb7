@@ -208,18 +208,18 @@ class tenantMgr {
                        TableName:                 tmCommon.tenantSchema.TableName,
                        Key:                       keyParams,
                        UpdateExpression:          "set " +
-                                                      "companyName=:companyName, " +
-                                                      "accountName=:accountName, " +
-                                                      "ownerName=:ownerName, " +
+                                                      "company_name=:company_name, " +
+                                                      "account_name=:account_name, " +
+                                                      "owner_name=:owner_name, " +
                                                       "tier=:tier, " +
                                                       "#status=:status",
                        ExpressionAttributeNames:  {
                            '#status': 'status'
                        },
                        ExpressionAttributeValues: {
-                           ":companyName": tenant.companyName,
-                           ":accountName": tenant.accountName,
-                           ":ownerName":   tenant.ownerName,
+                           ":company_name": tenant.company_name,
+                           ":account_name": tenant.account_name,
+                           ":owner_name":   tenant.owner_name,
                            ":tier":        tenant.tier,
                            ":status":      tenant.status
                        },

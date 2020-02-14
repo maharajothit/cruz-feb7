@@ -95,7 +95,7 @@ class UserMgr {
     /**
      * Create a new user
      */
-    create(event) {
+    create_old(event) {
         return new Promise(function (resolve, reject) {
             tokenManager.getCredentialsFromToken(event, function (err, credentials) {
                 var user = JSON.parse(event.body);
@@ -191,6 +191,11 @@ class UserMgr {
 
                     var userPoolId = getUserPoolIdFromRequest(event);
 
+                    console.log("=======userPoolId-for-create-new-user======"+JSON.stringify(userPoolId));
+                    console.log("=======user-for-create-new-user======"+JSON.stringify(user));
+                    console.log("=======credentials-for-create-new-user======"+JSON.stringify(credentials));
+
+                    
                     // update user data
                     cognitoUsers.updateUser(credentials, user, userPoolId, configuration.aws_region)
                         .then(function (updatedUser) {
@@ -245,6 +250,164 @@ class UserMgr {
             });
         });
     }
+//Ramesh Start
+    getUsersByTenantId(event){
+        console.log("User getUsers");
+        console.log("==========USER GET USER BY ID====="+JSON.stringify(event));
+        
+        return new Promise(function (resolve, reject) {
+            tokenManager.getCredentialsFromToken(event, function (err, credentials) {
+
+                if (credentials) {
+                    console.log("==========USER GET USER BY ID====="+JSON.stringify(event));
+
+                    var userPoolId = getUserPoolIdFromRequest(event);
+
+                    var userSchema = {
+                        TableName : configuration.table.user,
+                        KeySchema: [
+                            { AttributeName: "tenant_id_key", KeyType: "HASH"},
+                            { AttributeName: "id", KeyType: "RANGE" }  
+                        ],
+                        AttributeDefinitions: [
+                            { AttributeName: "tenant_id_key", AttributeType: "N" },
+                            { AttributeName: "id", AttributeType: "S" }
+                        ],
+                        ProvisionedThroughput: {
+                            ReadCapacityUnits: 10,
+                            WriteCapacityUnits: 10
+                        }
+                    };
+
+                    var dynamoHelper = new DynamoDBHelper(userSchema, credentials, configuration);
+
+                    console.log("==========USER GET USER BY ID dynamoHelper====="+JSON.stringify(dynamoHelper));
+
+                    console.log("==========USER GET USER BY ID= userSchema===="+JSON.stringify(event));
+
+                    var searchParams = {       
+                        TableName: userSchema.TableName,
+                        FilterExpression: "tenant_id_key = :tenant_id_key",
+                        ExpressionAttributeValues: {
+                            ":tenant_id_key": event.pathParameters.id
+                        }
+                    }
+
+                    console.log("==========USER GET USER BY ID searchParams====="+JSON.stringify(event));
+
+                    dynamoHelper.scan(searchParams, credentials, function (err, users) {
+                        if (err) {
+                            console.log('Error getting user: ' + err.message);
+                            callback(err);
+                        }
+                        else {
+                            console.log("--shared fun--users-"+JSON.stringify(users))
+                            console.log("-users.length-"+users.length)
+                            if (users.length === 0) {
+                                var err = new Error('No user found: ' + userId);
+                                console.log(err.message);
+                                console.log('--');
+                                reject(err);
+                            } else {
+                                console.log('return user = ');
+                                console.log(users[0]);
+                                resolve(users[0]);
+                            }
+                        }
+                    });
+
+                    // cognitoUsers.getUsersFromPool(credentials, userPoolId, configuration.aws_region)
+                    //     .then(function (userList) {
+                    //         var users = { items: userList };
+                    //         resolve(users);
+                    //     })
+                    //     .catch(function (error) {
+                    //         console.log("getUsers: rejected: error = ");
+                    //         console.log(error);
+                    //         reject("Error retrieving user list: " + error.message);
+                    //     });
+                } else {
+                    console.log('Error retrieving credentials: err=' );
+		            console.log(err);
+                    reject(err);
+                }
+            });
+        });
+    }
+//Ramesh End
+
+//Ramesh Start
+    // createUser(event){
+    //     return new Promise(function (resolve, reject) {
+    //         tokenManager.getCredentialsFromToken(event, function (err, credentials) {
+
+    //             if (credentials) {
+    //                 console.log("==========USER GET USER BY ID====="+JSON.stringify(event));
+
+    //                 var userPoolId = getUserPoolIdFromRequest(event);
+
+    //                 var userSchema = {
+    //                     TableName : configuration.table.user,
+    //                     KeySchema: [
+    //                         { AttributeName: "tenant_id_key", KeyType: "HASH"},
+    //                         { AttributeName: "id", KeyType: "RANGE" }  
+    //                     ],
+    //                     AttributeDefinitions: [
+    //                         { AttributeName: "tenant_id_key", AttributeType: "N" },
+    //                         { AttributeName: "id", AttributeType: "S" }
+    //                     ],
+    //                     ProvisionedThroughput: {
+    //                         ReadCapacityUnits: 10,
+    //                         WriteCapacityUnits: 10
+    //                     }
+    //                 };
+
+    //                 var dynamoHelper = new DynamoDBHelper(userSchema, credentials, configuration);
+
+    //                 console.log("==========USER GET USER BY ID dynamoHelper====="+JSON.stringify(dynamoHelper));
+
+    //                 console.log("==========USER GET USER BY ID= userSchema===="+JSON.stringify(event));
+
+    //                 var searchParams = {       
+    //                     TableName: userSchema.TableName,
+    //                     FilterExpression: "tenant_id_key = :tenant_id_key and user_name = :user_name",
+    //                     ExpressionAttributeValues: {
+    //                         ":tenant_id_key": event.pathParameters.id,
+    //                         ":user_name": event.user_name
+    //                     }
+    //                 }
+
+    //                 console.log("==========USER GET USER BY ID searchParams====="+JSON.stringify(event));
+
+    //                 dynamoHelper.scan(searchParams, credentials, function (err, users) {
+    //                     if (err) {
+    //                         console.log('Error getting user: ' + err.message);
+    //                         callback(err);
+    //                     }
+    //                     else {
+    //                         console.log("--shared fun--users-"+JSON.stringify(users))
+    //                         console.log("-users.length-"+users.length)
+    //                         if (users.length === 0) {
+    //                             var err = new Error('No user found: ' + userId);
+    //                             console.log(err.message);
+    //                             console.log('--');
+    //                             reject(err);
+    //                         } else {
+    //                             console.log('return user = ');
+    //                             console.log(users[0]);
+    //                             resolve(users[0]);
+    //                         }
+    //                     }
+    //                 });
+    //             } else {
+    //                 console.log('Error retrieving credentials: err=' );
+	// 	            console.log(err);
+    //                 reject(err);
+    //             }
+    //         });
+    //     });
+    // }
+//Ramesh end
 }
 
 /**

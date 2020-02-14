@@ -56,17 +56,27 @@ DynamoDBHelper.prototype.query = function(searchParameters, credentials, callbac
  * @param callback Callback with results
  */
 DynamoDBHelper.prototype.putItem = function(item, credentials, callback) {
+    console.log("=========-----item-----========="+JSON.stringify(item));
+    console.log("=========-----credentials-----========="+JSON.stringify(credentials));
+
     this.getDynamoDBDocumentClient(credentials, function (error, docClient) {
         var itemParams = {
             TableName: this.tableDefinition.TableName,
             Item: item
         }
+        console.log("======itemParams-----======"+JSON.stringify(itemParams));
+        console.log("======docClient-----======"+JSON.stringify(docClient));
+
 
         docClient.put(itemParams, function(err, data) {
 
+            console.log("======data-from-docClient----======"+JSON.stringify(data));
 
-            if (err)
+            if (err){
+            console.log("======docClient-err----======"+JSON.stringify(err));
+
                 callback(err);
+            }
             else {
                 callback(null, data);
 

@@ -23,6 +23,20 @@
           authorizer:
             ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
 
+  getUsersByTenantId:
+    handler: ${self:custom.userdir}handler.getUsersByTenantId
+    events:
+      - http:
+          path: users/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
   getUsers:
     handler: ${self:custom.userdir}handler.getUsers
     events:

@@ -1053,7 +1053,8 @@ module.exports.getUsersFromPool = function (credentials, userPoolId, region) {
                 'custom:tier',
                 'given_name',
                 'family_name',
-                'sub'
+                'sub',
+                // 'custom:tenant_id_key'
                 /* more items */
             ],
             Limit: 0

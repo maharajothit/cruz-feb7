@@ -13,6 +13,8 @@ var functionRegistration = {
     update: {ttl: 300, type: "http", url: "/user",  status: "healthy"},
     del: {ttl: 300, type: "http",  url: "/user/", status: "healthy"},
     userMgr: {ttl: 300, type: "http", url: "",  status: "healthy"},
+    getUsersByTenantId: {ttl: 300, type: "http", url: "/users/", status: "healthy"}, //Ramesh creating request 
+    // createUser: {ttl: 300, type: "http", url: "/user/create", status: "healthy"}
 }
 
 export async function serviceRegister(event) {
@@ -120,4 +122,25 @@ export async function del(event) {
     return res.success(result);
 }
 
-
+//Ramesh Start
+export async function getUsersByTenantId(event) {
+    var userMgr = new UserMgr(event);
+    try {
+        var result = await userMgr.getUsersByTenantId(event);
+    } catch (err) {
+        return res.error(err);
+    }
+    return res.success(result);
+}
+//Ramesh End
+//Ramesh Start
+// export async function createUser(event) {
+//     var userMgr = new UserMgr(event);
+//     try {
+//         var result = await userMgr.createUser(event);
+//     } catch (err) {
+//         return res.error(err);
+//     }
+//     return res.success(result); 
+// }
+//Ramesh End

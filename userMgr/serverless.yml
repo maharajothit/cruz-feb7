@@ -35,7 +35,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   timeout: 30 #set timeout to 30 seconds
   iamRoleStatements:
     - Effect: "Allow"
