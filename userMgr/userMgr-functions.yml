@@ -57,6 +57,26 @@
           authorizer:
             ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
 
+  createUser:
+    handler: ${self:custom.userdir}handler.createUser
+    events:
+      - http:
+          path: user/create
+          method: post
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
+  updateUser:
+    handler: ${self:custom.userdir}handler.updateUser
+    events:
+      - http:
+          path: user/update/
+          method: put
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
 
   enable:
     handler: ${self:custom.userdir}handler.enable

@@ -1,5 +1,6 @@
 
 const uuidV4 = require("uuidv4");
+const moment = require('moment');
 
 // Configure Environment
 const configModule = require('../libs/config-helper.js');
@@ -248,7 +249,8 @@ async function saveTenantData(tenant) {
     console.log("check 6---"+JSON.stringify(tenant))
     var promise = new Promise(function(resolve, reject) {
         // init the tenant sace request
-        var currentDateTime = new Date();
+        //var currentDateTime = new Date();
+        var currentDateTime = moment().format('MM/DD/YYYY h:mm:ss a'); 
         var tenantRequestData = {
             /**
             "id": tenant.id,

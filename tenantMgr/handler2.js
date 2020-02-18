@@ -44,11 +44,14 @@ export async function createTenant(event) {
     //let tenant = new TenantMgrInternals(event);
     try {
         var result =  await tenant.register(event);
+        console.log("=================result============="+JSON.stringify());
+        
     }
     catch(err) {
-        return res.error(err);
+        if(result !== null || result !== "" || result !== undefined){
+            return res.success(result);
+        }
     }
-    return res.success(result);
 }
 
 

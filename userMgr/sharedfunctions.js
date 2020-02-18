@@ -1,11 +1,13 @@
 
 const AWS = require('aws-sdk');
 const uuidV4 = require("uuidv4");
+const moment = require('moment');
 
 const configModule = require('../libs/config-helper.js');
 var configuration = configModule.configure(process.env.stage);
 const DynamoDBHelper = require('../libs/dynamodb-helper.js');
 const cognitoUsers = require('../libs/cognito-user.js');
+const uniqueCode = require('../libs/uniquecodeGenerators.js');
 
 var userSchema = {
     TableName : configuration.table.user,
@@ -172,8 +174,8 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
                 newUser.IdentityPoolId = identityPoolId;
                 
                 */
-                newUser.id = newUser.user_id;
-                newUser.id_key= newUser.user_id_key;
+                newUser.id = uniqueCode.id("USER");
+                newUser.id_key= uniqueCode.id_key();
                 newUser.client_id = clientId;
                 newUser.tenant_id = tenantId;
                 /*newUser.sub = cognitoUser.User.Attributes[0].Value; */
@@ -193,7 +195,8 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
                 newUser.account_name = newUser.account_name;
                 newUser.tenant_id_key = newUser.tenant_id_key.toString();
 
-                var currentDateTime = new Date();
+                //var currentDateTime = new Date();
+                var currentDateTime = moment().format('MM/DD/YYYY h:mm:ss a'); 
                 //    console.log("d.toLocaleDateString('en-US')",d.toLocaleDateString('en-US'))
                 //console.log("---d---"+d)
 
