@@ -447,9 +447,6 @@ updateUser(event){
                     }
                 }
 
-                let code = unique.id();
-                console.log("==========code====="+JSON.stringify(code));
-
                 dynamoHelper.scan(searchParams, credentials, function (err, users) {
                     if (err) {
                         console.log('Error getting user: ' + err.message);
@@ -466,15 +463,11 @@ updateUser(event){
                         } else {
                             console.log('return user = ');
                             console.log(users[0]);
-                            
-                            //sharedFunctions.updateItem(users[0], credentials, function (err, updateUser) {
                                 console.log("users[0].id------"+JSON.stringify(users[0].id))
                                 var keyParams = {
                                     //id: tenant.id
                                     tenant_id_key: users[0].tenant_id_key,
                                 }
-                            
-
                                 var userUpdateParams = {
                                     TableName:                 configuration.table.user,
                                     Key:                       keyParams,
@@ -535,47 +528,10 @@ updateUser(event){
                                             resolve(data);
                                         }
                                     })
-                                })
-                                // dynamoHelper1.putItem(userUpdateParams, credentials, function (err, createdUser) {
-                                //     if (err) {
-                                //         console.log('updateUser: reject db got err = ');
-                                //         console.log(err)
-                                //         reject(err);
-                                //     }
-                                //     else {
-                                //         resolve(createdUser)
-                                //     }
-                                // });
-                                // this.getDynamoDBDocumentClient(credentials, function (error, docClient) {
-
-                                //     docClient.put(userUpdateParams, function(err, data) {
-                            
-                                //         console.log("======data-from-docClient----======"+JSON.stringify(data));
-                            
-                                //         if (err){
-                                //         console.log("======docClient-err----======"+JSON.stringify(err));
-                            
-                                //             reject(err);
-                                //         }
-                                //         else {
-                                //             resolve(null, data);
-                                //         }
-                                //     })
-                        //})
+                                })    
                     }
                 }
-                });
-
-               
-
-                // update user data
-                // cognitoUsers.updateUser(credentials, user, userPoolId, configuration.aws_region)
-                //     .then(function (updatedUser) {
-                //         resolve(updatedUser);
-                //     })
-                //     .catch(function (err) {
-                //         reject("Error updating user: " + err.message);
-                //     });
+                });  
             } else {
                 console.log('Error retrieving credentials: err=' );
         console.log(err);
@@ -584,6 +540,107 @@ updateUser(event){
         });
     });  
 }
+//Ramesh End
+//Ramesh start
+deleteUserById(event){
+        return new Promise(function (resolve, reject) {
+            tokenManager.getCredentialsFromToken(event, function (err, credentials) {
+                // get the user pool id from the request
+                if (credentials) {
+                    var userSchema = {
+                        TableName : configuration.table.user,
+                        KeySchema: [
+                            { AttributeName: "tenant_id_key", KeyType: "HASH"},
+                            { AttributeName: "id", KeyType: "RANGE" }  
+                        ],
+                        AttributeDefinitions: [
+                            { AttributeName: "tenant_id_key", AttributeType: "N" },
+                            { AttributeName: "id", AttributeType: "S" }
+                        ],
+                        ProvisionedThroughput: {
+                            ReadCapacityUnits: 10,
+                            WriteCapacityUnits: 10
+                        }
+                    };
+                    var dynamoHelper = new DynamoDBHelper(userSchema, credentials, configuration);
+    
+                    var searchParams = {       
+                        TableName: userSchema.TableName,
+                        FilterExpression: "id_key = :id_key",
+                        ExpressionAttributeValues: {
+                            ":id_key" : JSON.parse(event.pathParameters.id)
+                        }
+                    }
+    
+                    dynamoHelper.scan(searchParams, credentials, function (err, users) {
+                        if (err) {
+                            console.log('Error getting user: ' + err.message);
+                            callback(err);
+                        }
+                        else {
+                            if (users.length === 0) {
+                                var err = new Error('No user found: ' );
+                                console.log(err.message);
+                                console.log('--');
+                                reject(err);
+                            } else {
+                                console.log('return user = ');
+                                console.log(users[0]);
+                                    var keyParams = {
+                                        tenant_id_key: users[0].tenant_id_key,
+                                    }
+                                    var userUpdateParams = {
+                                        TableName:                 configuration.table.user,
+                                        Key:                       keyParams,
+                                        UpdateExpression:          "set " +
+                                                                       "#status=:status",
+                                                                       
+                                        ExpressionAttributeNames:  {
+                                            '#status': 'status'
+                                        },
+                                        ExpressionAttributeValues: {
+                                            ":status":      'Delete'
+                                        },
+                                        ReturnValues:              "UPDATED_NEW"
+                                    };
+                                    var userSchema = {
+                                        TableName : configuration.table.user,
+                                        KeySchema: [
+                                            { AttributeName: "tenant_id_key", KeyType: "HASH"},
+                                            { AttributeName: "id", KeyType: "RANGE" }  
+                                        ],
+                                        AttributeDefinitions: [
+                                            { AttributeName: "tenant_id_key", AttributeType: "N" },
+                                            { AttributeName: "id", AttributeType: "S" }
+                                        ],
+                                        ProvisionedThroughput: {
+                                            ReadCapacityUnits: 10,
+                                            WriteCapacityUnits: 10
+                                        }
+                                    };
+                                    // construct the helper object
+                                    var dynamoHelper1 = new DynamoDBHelper(userSchema, credentials, configuration);
+                                    dynamoHelper1.getDynamoDBDocumentClient(credentials, function (error, docClient) {
+                                            docClient.update(userUpdateParams, function(err, data) {
+                                            if (err){                                
+                                                reject(err);
+                                            }
+                                            else {
+                                                resolve(data);
+                                            }
+                                        })
+                                    })    
+                        }
+                    }
+                    });  
+                } else {
+                    console.log('Error retrieving credentials: err=' );
+                    console.log(err);
+                    reject(err);
+                }
+            });
+        });  
+    }
 //Ramesh End
 }
 

@@ -15,7 +15,8 @@ var functionRegistration = {
     userMgr: {ttl: 300, type: "http", url: "",  status: "healthy"},
     getUsersByTenantId: {ttl: 300, type: "http", url: "/users/", status: "healthy"}, //Ramesh creating request 
     createUser: {ttl: 300, type: "http", url: "/user/create", status: "healthy"}, //Ramesh Create User
-    updateUser: {ttl: 300, type: "http", url: "/user/update/", status: "healthy"} //Ramesh Update User
+    updateUser: {ttl: 300, type: "http", url: "/user/update", status: "healthy"}, //Ramesh Update User
+    deleteUserById: {ttl: 300, type: "http", url: "/user/delete/", status: "healthy"} //Ramesh delete user
 }
 
 export async function serviceRegister(event) {
@@ -152,6 +153,17 @@ export async function updateUser(event) {
         var result =  await userMgr.updateUser(event);
     }
     catch(err) {
+        return res.error(err);
+    }
+    return res.success(result);
+}
+//Ramesh End
+//Ramesh Start
+export async function deleteUserById(event) {
+    var userMgr = new UserMgr(event);
+    try {
+        var result = await userMgr.deleteUserById(event);
+    } catch (err) {
         return res.error(err);
     }
     return res.success(result);

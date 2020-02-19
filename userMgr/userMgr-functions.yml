@@ -71,12 +71,25 @@
     handler: ${self:custom.userdir}handler.updateUser
     events:
       - http:
-          path: user/update/
+          path: user/update
           method: put
           cors: true
           authorizer:
             ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
-
+ 
+  deleteUserById:
+    handler: ${self:custom.userdir}handler.deleteUserById
+    events:
+      - http:
+          path: user/delete/{id}
+          method: put
+          request:
+            parameters:
+              paths:
+                id: true
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
 
   enable:
     handler: ${self:custom.userdir}handler.enable

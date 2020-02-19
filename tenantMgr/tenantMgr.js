@@ -235,8 +235,77 @@ class tenantMgr {
                            reject("Error updating tenant");
                        }
                        else {
-                           console.log('Tenant ' + tenant.title + ' updated');
-                           resolve(tenantSaved);
+
+                        var dynamoHelper = new DynamoDBHelper(tmCommon.tenantSchema, credentials, configuration);
+                        var tenantIdParam = {
+                            id: tenant.id
+                        }
+                        dynamoHelper.getItem(tenantIdParam, credentials, function (err, tenantItem) {
+                            if (err) {
+                                console.log('Error getting tenant: ' + err.message);
+                                reject('{"Error" : "Error getting tenant"}');
+                            }
+                            else {
+                                console.log("========UPDATEW ITEM======"+JSON.stringify(tenantItem));
+                                
+                                var keyParams = {
+                                    tenant_id_key: JSON.stringify(tenantItem.id_key),
+                                }
+
+                                var userUpdateParams = {
+                                    TableName:                 configuration.table.user,
+                                    Key:                       keyParams,
+                                    UpdateExpression:          "set " +
+                                                                   "company_name=:company_name, " +
+                                                                   "account_name=:account_name, " +
+                                                                   "owner_name=:owner_name, " +
+                                                                   "#status=:status",
+                                                                   
+                                    ExpressionAttributeNames:  {
+                                        '#status': 'status'
+                                    },
+                                    ExpressionAttributeValues: {
+                                        ":company_name": tenant.company_name,
+                                        ":account_name": tenant.account_name,
+                                        ":owner_name":   tenant.owner_name,
+                                        ":status":      tenant.status
+                                    },
+                                    ReturnValues:              "UPDATED_NEW"
+                                };
+                                var userSchema = {
+                                    TableName : configuration.table.user,
+                                    KeySchema: [
+                                        { AttributeName: "tenant_id_key", KeyType: "HASH"},
+                                        { AttributeName: "id", KeyType: "RANGE" }  
+                                    ],
+                                    AttributeDefinitions: [
+                                        { AttributeName: "tenant_id_key", AttributeType: "N" },
+                                        { AttributeName: "id", AttributeType: "S" }
+                                    ],
+                                    ProvisionedThroughput: {
+                                        ReadCapacityUnits: 10,
+                                        WriteCapacityUnits: 10
+                                    }
+                                };
+                                var dynamoHelper1 = new DynamoDBHelper(userSchema, credentials, configuration);
+                               console.log("==========="+JSON.stringify(dynamoHelper1));
+                               
+                                dynamoHelper1.getDynamoDBDocumentClient(credentials, function (error, docClient) {
+                                    docClient.update(userUpdateParams, function(err, data) {                            
+                                        if (err){                            
+                                            reject(err);
+                                        }
+                                        else {
+                                            resolve(data);
+                                        }
+                                    })
+                                })
+                            }
+                        });
+                        //    console.log('Tenant ' + tenant.title + ' updated');
+                        //    console.log("========Updated tenant====="+JSON.stringify(tenantSaved));
+                           
+                        //    resolve(tenantSaved);
                        }
                    });
 
@@ -262,6 +331,8 @@ class tenantMgr {
                     console.log(errorMsg);
                     reject(errorMsg);
                 }
+                console.log("====================11111============");
+                
                 //ok we have have credentials - lets move on.
                 // init parameter structure
                 var tenantId = event.pathParameters.id;
@@ -294,7 +365,9 @@ class tenantMgr {
                     .then(() => {
                         // Step 2. get list of tenant users
                         console.log("deleting tenant: step 2 - get list of users ..");
-                        return getTenantUsers(tenant, credentials, tenant.UserPoolId);
+                        //return getTenantUsers(tenant, credentials, tenant.UserPoolId);
+                        return getTenantUsers(tenant, credentials, tenant.user_pool_id); //Ramesh
+
                      })
                     .then( (users) => {
                         var items = users.items;
@@ -443,7 +516,8 @@ function getUserPoolIdFromRequest(event) {
 
 function getTenantUsers(tenant, credentials, userPoolId) {
     return new Promise(function (resolve, reject) {
-
+        console.log("=========userPoolId========"+userPoolId);
+        
         cognitoUsers.getUsersFromPool(credentials, userPoolId, configuration.aws_region)
             .then(function (userList) {
                 var users = {items: userList};
