@@ -248,58 +248,87 @@ class tenantMgr {
                             else {
                                 console.log("========UPDATEW ITEM======"+JSON.stringify(tenantItem));
                                 
-                                var keyParams = {
-                                    tenant_id_key: JSON.stringify(tenantItem.id_key),
-                                }
-
-                                var userUpdateParams = {
-                                    TableName:                 configuration.table.user,
-                                    Key:                       keyParams,
-                                    UpdateExpression:          "set " +
-                                                                   "company_name=:company_name, " +
-                                                                   "account_name=:account_name, " +
-                                                                   "owner_name=:owner_name, " +
-                                                                   "#status=:status",
-                                                                   
-                                    ExpressionAttributeNames:  {
-                                        '#status': 'status'
-                                    },
-                                    ExpressionAttributeValues: {
-                                        ":company_name": tenant.company_name,
-                                        ":account_name": tenant.account_name,
-                                        ":owner_name":   tenant.owner_name,
-                                        ":status":      tenant.status
-                                    },
-                                    ReturnValues:              "UPDATED_NEW"
-                                };
                                 var userSchema = {
                                     TableName : configuration.table.user,
                                     KeySchema: [
-                                        { AttributeName: "tenant_id_key", KeyType: "HASH"},
-                                        { AttributeName: "id", KeyType: "RANGE" }  
+                                        { AttributeName: "id", KeyType: "HASH"},
+                                        { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
                                     ],
                                     AttributeDefinitions: [
-                                        { AttributeName: "tenant_id_key", AttributeType: "N" },
-                                        { AttributeName: "id", AttributeType: "S" }
+                                        { AttributeName: "id", AttributeType: "S" },
+                                        { AttributeName: "tenant_id_key", AttributeType: "N" }
                                     ],
                                     ProvisionedThroughput: {
                                         ReadCapacityUnits: 10,
                                         WriteCapacityUnits: 10
                                     }
                                 };
+
                                 var dynamoHelper1 = new DynamoDBHelper(userSchema, credentials, configuration);
-                               console.log("==========="+JSON.stringify(dynamoHelper1));
-                               
-                                dynamoHelper1.getDynamoDBDocumentClient(credentials, function (error, docClient) {
-                                    docClient.update(userUpdateParams, function(err, data) {                            
-                                        if (err){                            
+                                var searchParams = {       
+                                    TableName: userSchema.TableName,
+                                    FilterExpression: "email = :email",
+                                    ExpressionAttributeValues: {
+                                        ":email" : tenantItem.email
+                                    }
+                                }
+                                dynamoHelper1.scan(searchParams, credentials, function (err, users) {
+                                    if (err) {
+                                        console.log('Error getting user: ' + err.message);
+                                        callback(err);
+                                    }
+                                    else {
+                                        if (users.length === 0) {
+                                            var err = new Error('No user found: ' );
+                                            console.log(err.message);
+                                            console.log('--');
                                             reject(err);
+                                        } else {
+                                            var keyParams = {
+                                                id: users[0].id,
+                                                tenant_id_key: users[0].tenant_id_key
+                                            }
+            
+                                            var userUpdateParams = {
+                                                TableName:                 configuration.table.user,
+                                                Key:                       keyParams,
+                                                UpdateExpression:          "set " +
+                                                                               "company_name=:company_name, " +
+                                                                               "account_name=:account_name, " +
+                                                                               "owner_name=:owner_name, " +
+                                                                               "#status=:status",
+                                                                               
+                                                ExpressionAttributeNames:  {
+                                                    '#status': 'status'
+                                                },
+                                                ExpressionAttributeValues: {
+                                                    ":company_name": tenant.company_name,
+                                                    ":account_name": tenant.account_name,
+                                                    ":owner_name":   tenant.owner_name,
+                                                    ":status":      tenant.status
+                                                },
+                                                ReturnValues:              "UPDATED_NEW"
+                                            };
+                                            dynamoHelper1.getDynamoDBDocumentClient(credentials, function (error, docClient) {
+                                                docClient.update(userUpdateParams, function(err, data) {                            
+                                                    if (err){                            
+                                                        reject(err);
+                                                    }
+                                                    else {
+                                                        resolve(data);
+                                                    }
+                                                })
+                                            })
                                         }
-                                        else {
-                                            resolve(data);
-                                        }
-                                    })
+                                    }
                                 })
+                               
+                                
+                               
+                               
+                              // console.log("==========="+JSON.stringify(dynamoHelper1));
+                               
+                                
                             }
                         });
                         //    console.log('Tenant ' + tenant.title + ' updated');

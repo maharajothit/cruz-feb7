@@ -292,7 +292,7 @@ class UserMgr {
                         TableName: userSchema.TableName,
                         FilterExpression: "tenant_id_key = :tenant_id_key",
                         ExpressionAttributeValues: {
-                            ":tenant_id_key": event.pathParameters.id
+                            ":tenant_id_key": JSON.parse(event.pathParameters.id)
                         }
                     }
 
@@ -307,7 +307,7 @@ class UserMgr {
                             console.log("--shared fun--users-"+JSON.stringify(users))
                             console.log("-users.length-"+users.length)
                             if (users.length === 0) {
-                                var err = new Error('No user found: ' + userId);
+                                var err = new Error('No user found: ');
                                 console.log(err.message);
                                 console.log('--');
                                 reject(err);
@@ -463,9 +463,10 @@ updateUser(event){
                         } else {
                             console.log('return user = ');
                             console.log(users[0]);
-                                console.log("users[0].id------"+JSON.stringify(users[0].id))
+                                console.log("users[0].id------"+JSON.stringify(users[0]))
                                 var keyParams = {
                                     //id: tenant.id
+                                    id: users[0].id,
                                     tenant_id_key: users[0].tenant_id_key,
                                 }
                                 var userUpdateParams = {
@@ -496,12 +497,12 @@ updateUser(event){
                                 var userSchema = {
                                     TableName : configuration.table.user,
                                     KeySchema: [
-                                        { AttributeName: "tenant_id_key", KeyType: "HASH"},
-                                        { AttributeName: "id", KeyType: "RANGE" }  
+                                        { AttributeName: "id", KeyType: "HASH"},
+                                        { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
                                     ],
                                     AttributeDefinitions: [
-                                        { AttributeName: "tenant_id_key", AttributeType: "N" },
-                                        { AttributeName: "id", AttributeType: "S" }
+                                        { AttributeName: "id", AttributeType: "S" },
+                                        { AttributeName: "tenant_id_key", AttributeType: "N" }
                                     ],
                                     ProvisionedThroughput: {
                                         ReadCapacityUnits: 10,
@@ -585,9 +586,10 @@ deleteUserById(event){
                                 reject(err);
                             } else {
                                 console.log('return user = ');
-                                console.log(users[0]);
+                                console.log(users[0].id);
                                     var keyParams = {
-                                        tenant_id_key: users[0].tenant_id_key,
+                                        id: users[0].id,
+                                        tenant_id_key: users[0].tenant_id_key
                                     }
                                     var userUpdateParams = {
                                         TableName:                 configuration.table.user,
@@ -606,12 +608,12 @@ deleteUserById(event){
                                     var userSchema = {
                                         TableName : configuration.table.user,
                                         KeySchema: [
-                                            { AttributeName: "tenant_id_key", KeyType: "HASH"},
-                                            { AttributeName: "id", KeyType: "RANGE" }  
+                                            { AttributeName: "id", KeyType: "HASH"},
+                                            { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
                                         ],
                                         AttributeDefinitions: [
-                                            { AttributeName: "tenant_id_key", AttributeType: "N" },
-                                            { AttributeName: "id", AttributeType: "S" }
+                                            { AttributeName: "id", AttributeType: "S" },
+                                            { AttributeName: "tenant_id_key", AttributeType: "N" }
                                         ],
                                         ProvisionedThroughput: {
                                             ReadCapacityUnits: 10,
