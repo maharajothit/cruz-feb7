@@ -5,7 +5,7 @@ const serviceDiscovery = require('../serviceDiscovery/serviceDiscovery-helper');
 const tenantReg = require('../tenantReg/tenantReg');
 var functionRegistration = {
     create: {ttl: 300, type: "internal", status: "healthy"},
-    createTenant: {ttl: 300, type: "http",  url: "/tenant", status: "healthy"}
+    //createTenant: {ttl: 300, type: "http",  url: "/tenant", status: "healthy"}
 };
 
 export async function serviceRegister(event) {
@@ -38,20 +38,20 @@ export async function create(event) {
     return res.success(result);
 }
 
-export async function createTenant(event) {
-    console.log("before TenantMgr() process.env.stage = " + process.env.stage);
-    let tenant = new tenantReg(event);
-    //let tenant = new TenantMgrInternals(event);
-    try {
-        var result =  await tenant.register(event);
-        console.log("=================result============="+JSON.stringify());
+// export async function createTenant(event) {
+//     console.log("before TenantMgr() process.env.stage = " + process.env.stage);
+//     let tenant = new tenantReg(event);
+//     //let tenant = new TenantMgrInternals(event);
+//     try {
+//         var result =  await tenant.register(event);
+//         console.log("=================result============="+JSON.stringify());
         
-    }
-    catch(err) {
-        if(result !== null || result !== "" || result !== undefined){
-            return res.success(result);
-        }
-    }
-}
+//     }
+//     catch(err) {
+//         if(result !== null || result !== "" || result !== undefined){
+//             return res.success(result);
+//         }
+//     }
+// }
 
 

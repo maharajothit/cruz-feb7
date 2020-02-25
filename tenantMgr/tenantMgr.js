@@ -389,67 +389,68 @@ class tenantMgr {
                         tenant = data;
                         console.log("deleting tenant: step 1 - set deleting status...");
                         // Step 1. set tenant.status to deleting and deletedate = today
-                        return markTenantStatus(tenant, credentials, "Deleting")
+                        return markTenantStatus(tenant, credentials, "Deleted") //Ramesh
                     })
                     .then(() => {
                         // Step 2. get list of tenant users
                         console.log("deleting tenant: step 2 - get list of users ..");
                         //return getTenantUsers(tenant, credentials, tenant.UserPoolId);
-                        return getTenantUsers(tenant, credentials, tenant.user_pool_id); //Ramesh
+                        return getAllUsersAndDelete(tenant, credentials, tenant.userPoolId);
+                        //return getTenantUsers(tenant, credentials, tenant.user_pool_id); //ORIGINAL
 
                      })
-                    .then( (users) => {
-                        var items = users.items;
-                        console.log("deleting tenant: step 3 - delete all users for tenant..");
-                        return removeTenantUsers(items, tenant);
-                    })
-                    .then( async (user) => {
-                        console.log("deleting tenant: step 4 - delete polices.");
-                        // step 4. delete roles & policies
+                    // .then( (users) => {
+                    //     var items = users.items;
+                    //     console.log("deleting tenant: step 3 - delete all users for tenant..");
+                    //     return removeTenantUsers(items, tenant);
+                    // })
+                    // .then( async (user) => {
+                    //     console.log("deleting tenant: step 4 - delete polices.");
+                    //     // step 4. delete roles & policies
 
-                        var params = {
-                            "pool": {
-                                "UserPool": {
-                                   // "Id": tenant.UserPoolId
-                                   "Id" : tenant.user_pool_id
-                                }
-                             },
-                            "userPoolClient": user.client_id,
-                            "identityPool": {
-                                //"IdentityPoolId": tenant.IdentityPoolId
-                                "IdentityPoolId": tenant.identity_pool_id
-                            },
-                            "role": {
-                                /*
-                                "systemAdminRole": tenant.systemAdminRole,
-                                "systemSupportRole": tenant.systemSupportRole,
-                                "trustRole": tenant.trustRole,
-                                */
-                               "systemAdminRole": tenant.system_admin_role,
-                               "systemSupportRole": tenant.system_support_role,
-                               "trustRole": tenant.trust_role,
-                            },
-                            "policy": {
-                                /**
-                                "systemAdminPolicy": tenant.systemAdminPolicy,
-                                "systemSupportPolicy": tenant.systemSupportPolicy,
-                                 */
-                                "systemAdminPolicy": tenant.system_admin_policy,
-                                "systemSupportPolicy": tenant.system_support_policy,
-                            },
-                            "addRoleToIdentity": '',
-                            "user": user
-                        };
+                    //     var params = {
+                    //         "pool": {
+                    //             "UserPool": {
+                    //                // "Id": tenant.UserPoolId
+                    //                "Id" : tenant.user_pool_id
+                    //             }
+                    //          },
+                    //         "userPoolClient": user.client_id,
+                    //         "identityPool": {
+                    //             //"IdentityPoolId": tenant.IdentityPoolId
+                    //             "IdentityPoolId": tenant.identity_pool_id
+                    //         },
+                    //         "role": {
+                    //             /*
+                    //             "systemAdminRole": tenant.systemAdminRole,
+                    //             "systemSupportRole": tenant.systemSupportRole,
+                    //             "trustRole": tenant.trustRole,
+                    //             */
+                    //            "systemAdminRole": tenant.system_admin_role,
+                    //            "systemSupportRole": tenant.system_support_role,
+                    //            "trustRole": tenant.trust_role,
+                    //         },
+                    //         "policy": {
+                    //             /**
+                    //             "systemAdminPolicy": tenant.systemAdminPolicy,
+                    //             "systemSupportPolicy": tenant.systemSupportPolicy,
+                    //              */
+                    //             "systemAdminPolicy": tenant.system_admin_policy,
+                    //             "systemSupportPolicy": tenant.system_support_policy,
+                    //         },
+                    //         "addRoleToIdentity": '',
+                    //         "user": user
+                    //     };
 
-                        var functionName = serviceDiscovery.getServiceName(process.env.PROJECT_NAME,'UserMgr','deleteTenantPolicies',process.env.stage);
+                    //     var functionName = serviceDiscovery.getServiceName(process.env.PROJECT_NAME,'UserMgr','deleteTenantPolicies',process.env.stage);
 
-                        var payLoad = {params: params};
-                       return  RequestHelper.invokeLambda(functionName,payLoad)
-                      })
-                    .then((data) => {
-                         console.log("deleting tenant: step 5 - mark tenant deleted.");
-                        return  markTenantStatus(tenant, credentials, "Deleted")
-                    })
+                    //     var payLoad = {params: params};
+                    //    return  RequestHelper.invokeLambda(functionName,payLoad)
+                    //   })
+                    // .then((data) => {
+                    //      console.log("deleting tenant: step 5 - mark tenant deleted.");
+                    //     return  markTenantStatus(tenant, credentials, "Deleted")
+                    // })
                     .then(() => {
                         console.log('Tenant ' + tenantId + ' marked deleted');
                         resolve({status:true});
@@ -465,6 +466,82 @@ class tenantMgr {
 
 
 }
+
+function getAllUsersAndDelete(tenant, credentials, userPoolId){
+    return new Promise(function (resolve, reject) {
+        console.log("===========Tenanat======"+JSON.stringify(tenant));
+        
+        var userSchema = {
+            TableName : configuration.table.user,
+            KeySchema: [
+                { AttributeName: "id", KeyType: "HASH"},
+                { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
+            ],
+            AttributeDefinitions: [
+                { AttributeName: "id", AttributeType: "S" },
+                { AttributeName: "tenant_id_key", AttributeType: "N" }
+            ],
+            ProvisionedThroughput: {
+                ReadCapacityUnits: 10,
+                WriteCapacityUnits: 10
+            }
+        };
+
+        var dynamoHelper1 = new DynamoDBHelper(userSchema, credentials, configuration);
+        var searchParams = {       
+            TableName: userSchema.TableName,
+            FilterExpression: "tenant_id_key = :tenant_id_key",
+            ExpressionAttributeValues: {
+                ":tenant_id_key" : tenant.id_key
+            }
+        }
+        dynamoHelper1.scan(searchParams, credentials, function (err, users) {
+            if (err) {
+                console.log('Error getting user: ' + err.message);
+                callback(err);
+            }
+            else {
+                if (users.length === 0) {
+                    var err = new Error('No user found: ' );
+                    console.log(err.message);
+                    reject(err);
+                } else {
+                    console.log("=========="+JSON.stringify(users));
+                    users.forEach(async (user) => {
+                         var keyParams = {
+                            id: user.id,
+                            tenant_id_key: user.tenant_id_key
+                        }
+                        var userUpdateParams = {
+                            TableName:                 configuration.table.user,
+                            Key:                       keyParams,
+                            UpdateExpression:          "set " +
+                                                            "#status=:status",
+                            ExpressionAttributeNames:  {
+                                '#status': 'status'
+                            },
+                            ExpressionAttributeValues: {
+                                ":status":      'Delete'
+                            },
+                            ReturnValues:              "UPDATED_NEW"
+                        };
+                            dynamoHelper1.getDynamoDBDocumentClient(credentials, function (error, docClient) {
+                                docClient.update(userUpdateParams, function(err, data) {                            
+                                    if (err){                            
+                                        reject(err);
+                                    }
+                                    else {
+                                        resolve(data);
+                                    }
+                                })
+                            })
+                    })
+                }
+            }
+        })
+    })
+}
+
 function findTenantInfo(tenantId, credentials) {
     var tenantIdParam = {
         id: tenantId

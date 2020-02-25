@@ -313,7 +313,21 @@ class UserMgr {
                                 reject(err);
                             } else {
                                 console.log('return user = ');
-                                console.log(users[0]);
+                                console.log(JSON.stringify(users));
+                                let array = [];
+                                for(let i = 0; users.length > i; i++){
+                                    array.push(users[i]);
+                                }
+                                console.log("==========="+JSON.stringify(array));
+                                
+
+                                // var listUser = [];
+                                // for (key in users) {    
+                                //     listUser.push(Object.assign(users[key], {name: key}));
+                                // }
+                                // console.log("============"+JSON.stringify(listUser));
+                                
+                                resolve(array);
                                 resolve(users[0]);
                             }
                         }
@@ -478,6 +492,9 @@ updateUser(event){
                                                                    "company_name=:company_name, " +
                                                                    "account_name=:account_name, " +
                                                                    "owner_name=:owner_name, " +
+                                                                   "role=:role, "+
+                                                                   "tier=:tier, "+
+                                                                   "tenant_type=:tenant_type, "+
                                                                    "#status=:status",
                                                                    
                                     ExpressionAttributeNames:  {
@@ -489,6 +506,9 @@ updateUser(event){
                                         ":owner_name":   user.owner_name,
                                         ":first_name" : user.first_name,
                                         ":last_name" : user.last_name,
+                                        ":role" : user.role,
+                                        ":tier" : user.tier,
+                                        ":tenant_type" : user.tenant_type,
                                         ":status":      user.status
                                     },
                                     ReturnValues:              "UPDATED_NEW"

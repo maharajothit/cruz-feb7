@@ -458,7 +458,8 @@ module.exports.getPolicyTemplate = function(policyType, policyConfig) {
         tenantTableArn: databaseArnPrefix + policyConfig.tenantTableName,
         userTableArn: databaseArnPrefix + policyConfig.userTableName,
         productTableArn: databaseArnPrefix + policyConfig.productTableName,
-        orderTableArn: databaseArnPrefix + policyConfig.orderTableName
+        orderTableArn: databaseArnPrefix + policyConfig.orderTableName,
+        entityTableArn: databaseArnPrefix + policyConfig.entityTableName
     }
 
     if (policyType === configuration.userRole.systemAdmin)
@@ -526,6 +527,28 @@ function getTenantAdminPolicy(policyParams) {
 
                 ],
                 "Resource": [policyParams.userTableArn, policyParams.userTableArn + '/*'],
+                "Condition": {
+                    "ForAllValues:StringEquals": {
+                        "dynamodb:LeadingKeys": [policyParams.tenantId]
+                    }
+                }
+            },
+            {
+                "Sid": "TenantAdminEntityTable",
+                "Effect": "Allow",
+                "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:Query",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:CreateTable"
+
+                ],
+                "Resource": [policyParams.entityTableArn, policyParams.entityTableArn + '/*'],
                 "Condition": {
                     "ForAllValues:StringEquals": {
                         "dynamodb:LeadingKeys": [policyParams.tenantId]
@@ -625,6 +648,25 @@ function getTenantUserPolicy(policyParams) {
 
             },
             {
+                "Sid": "TenantReadOnlyEntityTable",
+                "Effect": "Allow",
+                "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:Query",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:CreateTable"
+
+                ],
+                "Resource": [policyParams.entityTableArn, policyParams.entityTableArn + '/*'],
+                "Condition": {
+                    "ForAllValues:StringEquals": {
+                        "dynamodb:LeadingKeys": [policyParams.tenantId]
+                    }
+                }
+
+            },
+            {
                 "Sid": "ReadWriteOrderTable",
                 "Effect": "Allow",
                 "Action": [
@@ -701,6 +743,12 @@ function getSystemAdminPolicy(policyParams) {
                 "Resource": [policyParams.userTableArn, policyParams.userTableArn + '/*']
             },
             {
+                "Sid": "TenantSystemAdminEntityTable",
+                "Effect": "Allow",
+                "Action": ["dynamodb:*"],
+                "Resource": [policyParams.entityTableArn, policyParams.entityTableArn + '/*']
+            },
+            {
                 "Sid": "TenantSystemAdminOrderTable",
                 "Effect": "Allow",
                 "Action": ["dynamodb:*"],
@@ -768,6 +816,20 @@ function getSystemUserPolicy(policyParams) {
 
                 ],
                 "Resource": [policyParams.userTableArn]
+            },
+            {
+                "Sid": "TenantSystemUserEntityTable",
+                "Effect": "Allow",
+                "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:CreateTable"
+
+                ],
+                "Resource": [policyParams.entityTableArn]
             },
             {
                 "Sid": "TenantSystemUserOrderTable",
@@ -1032,7 +1094,10 @@ module.exports.updateUserEnabledStatus = function(credentials, userPoolId, userN
  * @returns {Promise} A collection of found users
  */
 module.exports.getUsersFromPool = function (credentials, userPoolId, region) {
+    console.log("==========================");
+    
     var promise = new Promise(function(resolve, reject) {
+        console.log("============searchParams============");
 
         // init the Cognito service provider
         var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({
@@ -1048,7 +1113,7 @@ module.exports.getUsersFromPool = function (credentials, userPoolId, region) {
             UserPoolId: userPoolId, /* required */
             AttributesToGet: [
                 'email',
-                'custom:tenant_id',
+                'custom:tenant_id_key',
                 'custom:role',
                 'custom:tier',
                 'given_name',
@@ -1059,12 +1124,14 @@ module.exports.getUsersFromPool = function (credentials, userPoolId, region) {
             ],
             Limit: 0
         };
+console.log("============searchParams============"+JSON.stringify(searchParams));
 
         // request the list of users from Cognito
         cognitoIdentityServiceProvider.listUsers(searchParams, function (err, data) {
-            if (err)
+            if (err){
+                console.log("ERROR AT LIST USERS FROM COGNITO"+err);
                 reject(err);
-            else {
+            }else {
                 var userList = [];
                 data.Users.forEach(function (cognitoUser) {
                     var user = getUserFromCognitoUser(cognitoUser, cognitoUser.Attributes);

@@ -1,0 +1,90 @@
+  health:
+    handler: ${self:custom.entitydir}handler.health
+    events:
+      - http:
+          path: entity/health
+          method: get
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
+
+  getEntity:
+    handler: ${self:custom.entitydir}handler.getEntity
+    events:
+      - http:
+          path: entity/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
+
+  getEntities:
+    handler: ${self:custom.entitydir}handler.getEntities
+    events:
+      - http:
+          path: entities/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
+
+
+  create:
+    handler: ${self:custom.entitydir}handler.create
+    events:
+      - http:
+          path: entity
+          method: post
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
+  update:
+    handler: ${self:custom.entitydir}handler.update
+    events:
+      - http:
+          path: entity/{id}
+          method: put
+          request:
+            parameters:
+              paths:
+                id: true
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
+  delete:
+    handler: ${self:custom.entitydir}handler.del
+    events:
+      - http:
+          path: entity/{id}
+          method: delete
+          request:
+            parameters:
+              paths:
+                id: true
+          cors: true
+          authorizer:
+            ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
+
+  # schedule event to register health of service to Discovery Service
+  serviceRegister1:
+    handler: ${self:custom.entitydir}handler.serviceRegister
+    events:
+      - schedule:
+          rate: rate(5 minutes)
+          name: EntityMgr-service-register-event
+          description: "lambda function to register services with service discovery process and check on a regular basis"
+
+

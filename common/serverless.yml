@@ -21,6 +21,7 @@ custom:
   tenantregdir: "../tenantReg/"
   userdir: "../userMgr/"
   libsdir: "../../libs/"
+  entitydir: "../entityMgr/"
   # Load our webpack config
   webpack:
     webpackConfig: ./webpack.config.js

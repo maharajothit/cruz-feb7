@@ -1,12 +1,12 @@
 {
-  "name": "SaaSServerless-tenantMgr-api",
+  "name": "SaaSServerless-entityMgr-api",
   "version": "1.0.0",
-  "description": "SaaSServerless tenantMgr api functions",
+  "description": "SaaSServerless entityMgr api functions",
   "main": "handler.js",
   "scripts": {
     "test": "jest",
-    "offline": "sls offline start --stage local --port 3003 --noTimeout",
-    "localdb": "serverless dynamodb start --stage local --port 8000 --dbPath ./LocalDB"
+    "offline": "sls offline start --stage local --port 3006 --noTimeout",
+    "localdb": "serverless dynamodb start --stage local --port 3010 --dbPath ./LocalDB"
   },
   "author": "Bill Stoltz",
   "license": "MIT",
@@ -33,6 +33,8 @@
     "copy-webpack-plugin": "^4.6.0",
     "jwk-to-pem": "^2.0.1",
     "jwt-decode": "^2.2.0",
+    "moment": "^2.24.0",
+    "request": "^2.88.0",
     "source-map-support": "^0.4.18",
     "uuidv4": "^2.0.0"
   }

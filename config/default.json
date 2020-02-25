@@ -11,7 +11,8 @@
         "reg": 3004,
         "sys": 3011,
         "product": 3006,
-        "order": 3015
+        "order": 3015,
+        "entity": 3010
       },
       "role": {
         "sns": ""
@@ -23,13 +24,15 @@
         "reg": "Tenant Registration Manager",
         "sys": "System Registration Manager",
         "product": "Product Manager",
-        "order": "Order Manager"
+        "order": "Order Manager",
+        "entity": "Entity Manager"
       },
       "table": {
         "user": "User",
         "order": "Order",
         "product": "Product",
-        "tenant": "Tenant"
+        "tenant": "Tenant",
+        "entity": "Entity"
       },
       "userRole": {
         "systemAdmin" : "SystemAdmin",
@@ -55,7 +58,8 @@
         "reg": 3000,
         "sys": 3000,
         "product": 3000,
-        "order": 3000
+        "order": 3000,
+        "entity": 3000
       },
       "role": {
         "sns": ""
@@ -67,13 +71,15 @@
         "reg": "Tenant Registration Manager",
         "sys": "System Registration Manager",
         "product": "Product Manager",
-        "order": "Order Manager"
+        "order": "Order Manager",
+        "entity": "Entity Manager"
       },
       "table": {
         "user": "User",
         "order": "Order",
         "product": "Product",
-        "tenant": "Tenant"
+        "tenant": "Tenant",
+        "entity": "Entity"
       },
       "userRole": {
         "systemAdmin" : "SystemAdmin",
@@ -99,7 +105,8 @@
         "reg": 3001,
         "sys": 3001,
         "product": 3001,
-        "order": 3001
+        "order": 3001,
+        "entity": 3001
       },
       "name": {
         "auth": "Authentication Manager",
@@ -108,13 +115,15 @@
         "reg": "Tenant Registration Manager",
         "sys": "System Registration Manager",
         "product": "Product Manager",
-        "order": "Order Manager"
+        "order": "Order Manager",
+        "entity": "Entity Manager"
       },
       "table": {
         "user": "User",
         "order": "Order",
         "product": "Product",
-        "tenant": "Tenant"
+        "tenant": "Tenant",
+        "entity": "Entity"
       },
       "userRole": {
         "systemAdmin" : "SystemAdmin",
@@ -139,7 +148,8 @@
         "reg": 3004,
         "sys": 3011,
         "product": 3006,
-        "order": 3015
+        "order": 3015,
+        "entity": 3010
       },
       "name": {
         "auth": "Authentication Manager",
@@ -148,13 +158,15 @@
         "reg": "Tenant Registration Manager",
         "sys": "System Registration Manager",
         "product": "Product Manager",
-        "order": "Order Manager"
+        "order": "Order Manager",
+        "entity": "Entity Manager"
       },
       "table": {
         "user": "User",
         "order": "Order",
         "product": "Product",
-        "tenant": "Tenant"
+        "tenant": "Tenant",
+        "entity": "Entity"
       },
       "userRole": {
         "systemAdmin" : "SystemAdmin",

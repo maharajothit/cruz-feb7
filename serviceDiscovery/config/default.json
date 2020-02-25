@@ -27,7 +27,7 @@
     "prod":{
       "protocol": "https://",
       "table": {
-        "serviceDB": "serviceDB",
+        "serviceDB": "serviceDB"
       },
        "log": {
         "level": "debug"

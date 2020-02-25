@@ -1,4 +1,4 @@
-service: SaaSServerless-UserMgr
+service: SaaSServerless-EntityMgr
 
 # Use the serverless-webpack plugin to transpile ES6
 plugins:
@@ -27,9 +27,9 @@ custom:
   sysregdir: "../sysReg/"
   tenantmgrdir: "../tenantMgr/"
   tenantregdir: "../tenantReg/"
-  userdir: ""
+  userdir: "../userMgr/"
   libsdir: "../../libs/"
-  entitydir: "../entityMgr/"
+  entitydir: ""
   # Load our webpack config
   webpack:
     webpackConfig: ./webpack.config.js
@@ -61,7 +61,7 @@ provider:
       Resource: "*"
     - Effect: "Allow"
       Action:
-        - "cognito-identity:*"
+        - "congnito-identity:*"
       Resource: "*"
   stage: dev
   region: ${opt:region, file(../common/common.yml):${self:custom.stage}.region}
@@ -103,35 +103,37 @@ provider:
       'Fn::ImportValue': ${self:custom.stage}-SaaSServerlessApiRestApiRootResourceId
 
 functions:
-  - ${file(${self:custom.userdir}userMgr-functions.yml)}
-#  - ${file(${self:custom.customauthdir}customAuth-functions.yml)}
+  - ${file(${self:custom.entitydir}entityMgr-functions.yml)}
+  # - ${file(${self:custom.customauthdir}customAuth-functions.yml)}
 
 resources:
   Resources:
-    UserDB:
+    EntityDB:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:
-          - AttributeName: tenant_id
-            AttributeType: S
           - AttributeName: id
             AttributeType: S
+          - AttributeName: tenant_id_key
+            AttributeType: "N"
         KeySchema:
-          - AttributeName: tenant_id
-            KeyType: HASH
           - AttributeName: id
+            KeyType: HASH
+          - AttributeName: tenant_id_key
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 10
-        TableName: ${self:custom.table.user}
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:custom.table.entity}
         GlobalSecondaryIndexes:
-          - IndexName: UserNameIndex
+          - IndexName: EntityIndex
             KeySchema:
               - AttributeName: id
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
-              ReadCapacityUnits: 10
-              WriteCapacityUnits: 10
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+
+

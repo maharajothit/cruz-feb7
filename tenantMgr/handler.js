@@ -1,6 +1,8 @@
 const Response = require("../libs/response-lib");
 var res = new Response();
 const TenantMgr = require("./tenantMgr");
+const tenantReg = require('../tenantReg/tenantReg');
+
 const serviceDiscovery = require('../serviceDiscovery/serviceDiscovery-helper');
 var functionRegistration = {
     health: {ttl: 300, type: "http", url: "/tenant/health", status: "healthy"},
@@ -10,6 +12,7 @@ var functionRegistration = {
     update: {ttl: 300, type: "http",  url: "/tenant", status: "healthy"},
     del: {ttl: 300, type: "http",  url: "/tenant/", status: "healthy"},
     tenantMgr: {ttl: 300, type: "http", url: "",  status: "healthy"},
+    createTenant: {ttl: 300, type: "http",  url: "/tenant", status: "healthy"}
 }
 
 export async function serviceRegister(event) {
@@ -105,4 +108,19 @@ export async function removeTenant(event) {
     return res.success(result);
 }
 
+export async function createTenant(event) {
+    console.log("before TenantMgr() process.env.stage = " + process.env.stage);
+    let tenant = new tenantReg(event);
+    //let tenant = new TenantMgrInternals(event);
+    try {
+        var result =  await tenant.register(event); 
+    }
+    catch(err) {
+        res.error(err)
+    }
+    console.log("========res.success(result)======"+result);
+    
+    return res.success(result);
+
+}
 

@@ -37,11 +37,13 @@ module.exports.configure = function(environment) {
     console.log("TENANT_TABLE = ", process.env.TENANT_TABLE);
     console.log("PRODUCT_TABLE = ", process.env.PRODUCT_TABLE);
     console.log("ORDER_TABLE = ", process.env.ORDER_TABLE);
+    console.log("ENTITY_TABLE = ", process.env.ENTITY_TABLE);
+    
 
     switch(environment) {
         case "prod":
 
-            if(process.env.AWS_REGION == undefined || process.env.serviceURL == undefined || process.env.SNS_ROLE_ARN == undefined ||  process.env.USER_TABLE == undefined || process.env.TENANT_TABLE == undefined || process.env.PRODUCT_TABLE == undefined || process.env.ORDER_TABLE == undefined)
+            if(process.env.AWS_REGION == undefined || process.env.serviceURL == undefined || process.env.SNS_ROLE_ARN == undefined ||  process.env.USER_TABLE == undefined || process.env.TENANT_TABLE == undefined || process.env.PRODUCT_TABLE == undefined || process.env.ORDER_TABLE == undefined || process.env.ENTITY_TABLE == undefined)
             {
                 var error = "Production Environment Variables Not Properly Configured. \nPlease ensure AWS_REGION, SERVCE_URL, SNS_ROLE_ARN environment Variables are set."
                 throw error;
@@ -65,7 +67,8 @@ module.exports.configure = function(environment) {
                         user: process.env.USER_TABLE,
                         tenant: process.env.TENANT_TABLE,
                         product: process.env.PRODUCT_TABLE,
-                        order: process.env.ORDER_TABLE
+                        order: process.env.ORDER_TABLE,
+                        entity: process.env.ENTITY_TABLE
                     },
                     userRole: prod.userRole,
                     role: {
@@ -81,7 +84,8 @@ module.exports.configure = function(environment) {
                         reg: prod.protocol + process.env.SERVICE_URL + '/reg',
                         admins: prod.protocol + process.env.SERVICE_URL + '/auth',
                         order: prod.protocol + process.env.SERVICE_URL + '/order',
-                        sys: prod.protocol + process.env.SERVICE_URL + '/sys'
+                        sys: prod.protocol + process.env.SERVICE_URL + '/sys',
+                        entity: prod.protocol + process.env.SERVICE_URL + '/entity'
                     }
                 }
                 return config;
@@ -96,6 +100,8 @@ module.exports.configure = function(environment) {
                 console.log("TENANT_TABLE = ", process.env.TENANT_TABLE);
                 console.log("PRODUCT_TABLE = ", process.env.PRODUCT_TABLE);
                 console.log("ORDER_TABLE = ", process.env.ORDER_TABLE);
+                console.log("ENTITY_TABLE = ", process.env.ENTITY_TABLE);
+                
 
                 var port = dev.port;
                 var name = dev.name;
@@ -113,7 +119,8 @@ module.exports.configure = function(environment) {
                         user:             process.env.USER_TABLE,
                         tenant:           process.env.TENANT_TABLE,
                         product:          process.env.PRODUCT_TABLE,
-                        order:            process.env.ORDER_TABLE
+                        order:            process.env.ORDER_TABLE,
+                        entity:           process.env.ENTITY_TABLE
                     },
                     userRole:       dev.userRole,
                     role:           {
@@ -129,7 +136,8 @@ module.exports.configure = function(environment) {
                         reg:     process.env.apiURL + '/reg',
                         auth:    process.env.apiURL + '/auth',
                         admins:  process.env.apiURL + '/sys',
-                        order:   process.env.apiURL + '/order'
+                        order:   process.env.apiURL + '/order',
+                        entity:  process.env.apiURL + '/entity'
                     }
                 }
             return config;
@@ -167,7 +175,8 @@ module.exports.configure = function(environment) {
                     reg: local.protocol + local.domain + ':' + port.reg + '/reg',
                     auth: local.protocol + local.domain + ':' + port.auth + '/auth',
                     admins: local.protocol + local.domain + ':' + port.admins + '/sys',
-                    order: local.protocol + local.domain + ':' + port.order + '/order'
+                    order: local.protocol + local.domain + ':' + port.order + '/order',
+                    entity: local.protocol + local.domain + ':' + port.entity + '/entity'
                 }
             }
 

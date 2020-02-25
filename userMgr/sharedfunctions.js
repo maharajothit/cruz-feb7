@@ -193,8 +193,12 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
                 newUser.last_modified_by_user = "-";
                 newUser.company_name = newUser.company_name;
                 newUser.account_name = newUser.account_name;
-                newUser.tenant_id_key = newUser.tenant_id_key.toString();
-
+                newUser.tenant_id_key = newUser.tenant_id_key;
+                newUser.owner_name = newUser.owner_name;
+                newUser.role = newUser.role;
+                newUser.tier = newUser.tier;
+                newUser.tenant_type = newUser.tenant_type;
+                
                 //var currentDateTime = new Date();
                 var currentDateTime = moment().format('MM/DD/YYYY h:mm:ss a'); 
                 //    console.log("d.toLocaleDateString('en-US')",d.toLocaleDateString('en-US'))
@@ -232,6 +236,7 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
 }
 
 module.exports.deleteUser = function (credentials, UserPoolId, tenantId, userName) {
+                                        console.log("==========UserPoolId=========="+JSON.stringify(UserPoolId));
 
     return new Promise(function(resolve, reject) {
 

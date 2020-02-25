@@ -9,7 +9,7 @@
             ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
 
   createTenant:
-    handler: ${self:custom.tenantmgrdir}handler2.createTenant
+    handler: ${self:custom.tenantmgrdir}handler.createTenant
     events:
       - http:
           path: tenant
@@ -17,7 +17,7 @@
           cors: true
           authorizer:
             ${file(../common/common.yml):${self:custom.stage}.authorizer, file(../common/common.yml):dev.authorizer}
-
+            
   getTenant:
     handler: ${self:custom.tenantmgrdir}handler.getTenant
     events:

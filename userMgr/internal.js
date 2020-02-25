@@ -227,7 +227,8 @@ function provisionAdminUserWithRoles(user, credentials, adminPolicyName, userPol
         accountId: "", // updated later
         region: configuration.aws_region,
         tenantTableName: configuration.table.tenant,
-        userTableName: configuration.table.user
+        userTableName: configuration.table.user,
+        enityTableName: configuration.table.entity
         /*,
         productTableName: configuration.table.product,
         orderTableName: configuration.table.order */

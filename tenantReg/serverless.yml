@@ -14,6 +14,7 @@ custom:
     tenant: ${opt:tenanttable, self:provider.table.tenant}
     order: ${opt:ordertable, self:provider.table.order}
     product: ${opt:producttable, self:provider.table.product}
+    entity: ${opt:entitytable, self:provider.table.entity}
   configdir:
     local: "../config/"
     dev: "./config/"
@@ -28,6 +29,7 @@ custom:
   tenantregdir: ""
   userdir: "../userMgr/"
   libsdir: "../../libs/"
+  entitydir: "../entityMgr"
   # Load our webpack config
   webpack:
     webpackConfig: ./webpack.config.js
@@ -50,6 +52,7 @@ provider:
     tenant: ${self:custom.stage}-SaaS-tenant
     order: ${self:custom.stage}-SaaS-order
     product: ${self:custom.stage}-SaaS-product
+    entity: ${self:custom.stage}-SaaS-entity
   environment:
     stage: ${self:custom.stage}
     region: ${self:custom.region}
@@ -58,6 +61,7 @@ provider:
     TENANT_TABLE: ${self:custom.table.tenant}
     ORDER_TABLE: ${self:custom.table.order}
     PRODUCT_TABLE: ${self:custom.table.product}
+    ENTITY_TABLE: ${self:custom.table.entity}
 
     restApiId:
       'Fn::ImportValue': ${self:custom.stage}-SaaSServerlessApiRestApiId
