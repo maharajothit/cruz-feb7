@@ -217,8 +217,8 @@ class entityMgr {
         console.log("User update-------------");
         return new Promise(function (resolve, reject) {
             var entity  = JSON.parse(event.body);
-            if (typeof user === "string") {
-                entity  = JSON.parse(entity ); // stringified twice somewhere create object.
+            if (typeof entity === "string") {
+                entity  = JSON.parse(entity); // stringified twice somewhere create object.
             }
             tokenManager.getCredentialsFromToken(event, function (err, credentials) {
                 // get the user pool id from the request

@@ -16,6 +16,7 @@ AWS.config.update({region: configuration.aws_region});
 
 const RequestHelper = require('../libs/request-helper');
 const serviceDiscovery = require('../serviceDiscovery/serviceDiscovery-helper');
+const uniqueCode = require('../libs/uniquecodeGenerators.js');
 
 class TenantReg {
 
@@ -80,14 +81,14 @@ class TenantReg {
         */       
        console.log("check 2---")
         // Generate the tenant id
-        tenant.id = 'TENANT' + uuidV4();
-        tenant.user_id = 'USER' +uuidV4();
+        tenant.id = uniqueCode.id('TENANT');
+        //tenant.user_id = 'USER' +uuidV4();
         console.log('Creating Tenant ID: ' + tenant.id);
-        tenant.id = tenant.id.split('-').join('');
-        tenant.user_id = tenant.user_id.split('-').join('');
+        //tenant.id = tenant.id.split('-').join('');
+        //tenant.user_id = tenant.user_id.split('-').join('');
 
-        tenant.id_key =  this.hashCode(tenant.id)
-        tenant.user_id_key = this.hashCode(tenant.user_id)
+        tenant.id_key =  uniqueCode.id_key();
+        //tenant.user_id_key = this.hashCode(tenant.user_id)
         console.log("check 3---"+JSON.stringify(tenant))
         return new Promise(function (resolve, reject) {
 

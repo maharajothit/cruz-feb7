@@ -209,9 +209,9 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
                 newUser.user_last_login_datetime = currentDateTime.toString();
                 newUser.status_change_datetime = currentDateTime.toString();
                 newUser.created_datetime = currentDateTime.toString();
-                newUser.last_modified_datetime = currentDateTime.toString();
-                newUser.marked_for_deletion_datetime = currentDateTime.toString();
-                newUser.marked_for_deletion_by_user = currentDateTime.toString();
+                newUser.last_modified_datetime = newUser.last_modified_datetime;
+                newUser.marked_for_deletion_datetime = newUser.marked_for_deletion_datetime;
+                newUser.marked_for_deletion_by_user = newUser.marked_for_deletion_by_user;
 
                 
                 console.log("---check before insert--"+JSON.stringify(newUser))

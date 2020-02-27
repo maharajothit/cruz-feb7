@@ -492,9 +492,7 @@ updateUser(event){
                                                                    "company_name=:company_name, " +
                                                                    "account_name=:account_name, " +
                                                                    "owner_name=:owner_name, " +
-                                                                   "role=:role, "+
                                                                    "tier=:tier, "+
-                                                                   "tenant_type=:tenant_type, "+
                                                                    "#status=:status",
                                                                    
                                     ExpressionAttributeNames:  {
@@ -506,9 +504,7 @@ updateUser(event){
                                         ":owner_name":   user.owner_name,
                                         ":first_name" : user.first_name,
                                         ":last_name" : user.last_name,
-                                        ":role" : user.role,
                                         ":tier" : user.tier,
-                                        ":tenant_type" : user.tenant_type,
                                         ":status":      user.status
                                     },
                                     ReturnValues:              "UPDATED_NEW"
