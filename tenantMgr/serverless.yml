@@ -96,10 +96,127 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          # - AttributeName: id_key
+          #   AttributeType: "N"
+          # - AttributeName: tenant_type
+          #   AttributeType: S
+          # - AttributeName: tenant_sdo_id
+          #   AttributeType: S
+          # - AttributeName: tenant_alias
+          #   AttributeType: S
+          # - AttributeName: tenant_name
+          #   AttributeType: S
+          # - AttributeName: identity_pool_Id
+          #   AttributeType: S
+          # - AttributeName: user_pool_Id
+          #   AttributeType: S
+          # - AttributeName: account_name
+          #   AttributeType: S
+          # - AttributeName: company_name
+          #   AttributeType: S
+          # - AttributeName: email
+          #   AttributeType: S
+          # - AttributeName: owner_name
+          #   AttributeType: S
+          # - AttributeName: system_admin_policy
+          #   AttributeType: S
+          # - AttributeName: system_admin_role
+          #   AttributeType: S
+          # - AttributeName: system_support_policy
+          #   AttributeType: S
+          # - AttributeName: system_support_role
+          #   AttributeType: S
+          # - AttributeName: tier
+          #   AttributeType: S
+          # - AttributeName: trust_role
+          #   AttributeType: S
+          # - AttributeName: tenant_subscription_as_of_datetime
+          #   AttributeType: S
+          # - AttributeName: tenant_subscription_expiration_datetime
+          #   AttributeType: S
+          # - AttributeName: tenant_subscription_cancelation_datetime
+          #   AttributeType: S
+          # - AttributeName: tenant_subscription_canceled_by_user
+          #   AttributeType: S
+          # - AttributeName: tenant_trial_as_of_datetime
+          #   AttributeType: S
+          # - AttributeName: tenant_trial_expiration_datetime
+          #   AttributeType: S
+          # - AttributeName: tenant_trial_cancelation_datetime
+          #   AttributeType: S
+          # - AttributeName: tenant_cancelation_reason
+          #   AttributeType: S
+          # - AttributeName: tenant_auto_renew
+          #   AttributeType: S
+          # - AttributeName: tenant_logo_url
+          #   AttributeType: S
+          # - AttributeName: tenant_photo_url
+          #   AttributeType: S
+          # - AttributeName: status
+          #   AttributeType: S
+          # - AttributeName: status_change_datetime
+          #   AttributeType: S
+          # - AttributeName: created_datetime
+          #   AttributeType: S
+          # - AttributeName: created_by_user
+          #   AttributeType: S
+          # - AttributeName: last_modified_datetime
+          #   AttributeType: S
+          # - AttributeName: last_modified_by_user
+          #   AttributeType: S
+          # - AttributeName: marked_for_deletion_datetime
+          #   AttributeType: S
+          # - AttributeName: marked_for_deletion_by_user
+          #   AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 10
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
         TableName: ${self:custom.table.tenant}
+        GlobalSecondaryIndexes:
+          - IndexName: TenantSDOIndex
+            KeySchema:
+              # - AttributeName: tenant_sdo_id
+              #   KeyType: HASH
+              - AttributeName: id
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          # - IndexName: TenantAliasIndex
+          #   KeySchema:
+          #     - AttributeName: tenant_alias
+          #       KeyType: HASH
+          #     # - AttributeName: id
+          #     #   KeyType: RANGE
+          #   Projection:
+          #     ProjectionType: ALL
+          #   ProvisionedThroughput:
+          #     ReadCapacityUnits: 5
+          #     WriteCapacityUnits: 5
+          # - IndexName: TenantNameIndex
+          #   KeySchema:
+          #     - AttributeName: tenant_name
+          #       KeyType: HASH
+          #     # - AttributeName: id
+          #     #   KeyType: HASH
+          #   Projection:
+          #     ProjectionType: ALL
+          #   ProvisionedThroughput:
+          #     ReadCapacityUnits: 5
+          #     WriteCapacityUnits: 5
+          # - IndexName: TenantIdKeyIndex
+          #   KeySchema:
+          #     - AttributeName: id_key
+          #       KeyType: HASH
+          #     # - AttributeName: id
+          #     #   KeyType: HASH
+            # Projection:
+            #   ProjectionType: ALL
+            # ProvisionedThroughput:
+            #   ReadCapacityUnits: 5
+            #   WriteCapacityUnits: 5

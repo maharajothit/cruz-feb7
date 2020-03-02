@@ -207,10 +207,10 @@ async function registerTenantAdmin(tenant) {
             "lastName": tenant.lastName
             */
 
-            "tenant_id": tenant.id,
+            // "tenant_id": tenant.id,
             "company_name" : tenant.company_name,
             "account_name" : tenant.account_name,
-            "owner_name" : tenant.owner_name,
+            // "owner_name" : tenant.owner_name,
             "tier" : tenant.tier,
             "email" : tenant.email,
             "user_name" : tenant.user_name,
@@ -218,9 +218,10 @@ async function registerTenantAdmin(tenant) {
             "first_name" : tenant.first_name,
             "last_name" : tenant.last_name,
             "id_key" : tenant.id_key,
-            "user_id" : tenant.user_id,
-            "user_id_key" : tenant.user_id_key,
-            "tenant_id_key" : tenant.id_key
+            // "user_id" : tenant.user_id,
+            // "user_id_key" : tenant.user_id_key,
+            "tenant_id_key" : tenant.id_key,
+            "marked_for_deletion_by_user": " "
 
         };
 
@@ -284,9 +285,9 @@ async function saveTenantData(tenant) {
             "trust_role" : tenant.trust_role,
             "system_admin_policy" : tenant.system_admin_policy,
             "system_support_policy" : tenant.system_support_policy,
-            "user_name" : tenant.user_name,
-            "first_name" : tenant.first_name,
-            "last_name" : tenant.last_name,
+            // "user_name" : tenant.user_name,
+            // "first_name" : tenant.first_name,
+            // "last_name" : tenant.last_name,
             "id_key" :tenant.id_key,
             
 
@@ -296,12 +297,12 @@ async function saveTenantData(tenant) {
             "tenant_name" :tenant.tenant_name ,
             "tier" :tenant.tier,
             "tenant_subscription_as_of_datetime" : currentDateTime.toString(),
-            "tenant_subscription_expiration_datetime" : currentDateTime.toString(),
-            "tenant_subscription_cancelation_datetime" : currentDateTime.toString(),
+            "tenant_subscription_expiration_datetime" : null,
+            "tenant_subscription_cancelation_datetime" : null,
             "tenant_subscription_canceled_by_user" : tenant.tenant_subscription_canceled_by_user,
             "tenant_trial_as_of_datetime" : currentDateTime.toString(),
-            "tenant_trial_expiration_datetime" : currentDateTime.toString(),
-            "tenant_trial_cancelation_datetime" : currentDateTime.toString(),
+            "tenant_trial_expiration_datetime" : null,
+            "tenant_trial_cancelation_datetime" : null,
             "tenant_cancelation_reason" : tenant.tenant_cancelation_reason,
             "tenant_auto_renew": tenant.tenant_auto_renew,
             "tenant_logo_url" : tenant.tenant_logo_url,
@@ -312,7 +313,7 @@ async function saveTenantData(tenant) {
             "created_by_user" :tenant.created_by_user,
             "last_modified_datetime" : currentDateTime.toString(),
             "last_modified_by_user" : tenant.last_modified_by_user,
-            "marked_for_deletion_datetime" : currentDateTime.toString(),
+            "marked_for_deletion_datetime" : null,
             "marked_for_deletion_by_user" : tenant.marked_for_deletion_by_user
     
         };

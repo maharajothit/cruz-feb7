@@ -12,8 +12,7 @@ const uniqueCode = require('../libs/uniquecodeGenerators.js');
 var userSchema = {
     TableName : configuration.table.user,
     KeySchema: [
-        { AttributeName: "tenant_id_key", KeyType: "HASH"},
-       // { AttributeName: "tenant_id", KeyType: "HASH"},  //Partition key
+        { AttributeName: "tenant_id_key", KeyType: "HASH"},   //Partition key
         { AttributeName: "id", KeyType: "RANGE" }  //Sort key
     ],
     AttributeDefinitions: [
@@ -24,12 +23,13 @@ var userSchema = {
         ReadCapacityUnits: 10,
         WriteCapacityUnits: 10
     },
-   /* GlobalSecondaryIndexes: [
+    GlobalSecondaryIndexes: [
         {
-            //IndexName: 'UserNameIndex',
-            IndexName: 'EmailIndex',
+            IndexName: 'UserIndex',
             KeySchema: [
-                { AttributeName: "id", KeyType: "HASH"}
+                { AttributeName: "tenant_id_key", KeyType: "HASH"},
+                { AttributeName: "user_name", KeyType: "HASH"},
+                { AttributeName: "user_alias", KeyType: "HASH"}
             ],
             Projection: {
                 ProjectionType: 'ALL'
@@ -39,7 +39,7 @@ var userSchema = {
                 WriteCapacityUnits: 10
             }
         }
-    ] */
+    ] 
 };
 
 module.exports.userSchema = userSchema;
@@ -156,7 +156,7 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
         // fill in system attributes for user (not passed in POST)
        // newUser.userPoolId = userPoolId;
         newUser.user_pool_id = userPoolId;
-        newUser.tenant_id = tenantId;
+        // newUser.tenant_id = tenantId;
         newUser.email = newUser.email;
         // create the user in Cognito
         console.log("--sharedfuncin 126---"+JSON.stringify(newUser))
@@ -177,7 +177,7 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
                 newUser.id = uniqueCode.id("USER");
                 newUser.id_key= uniqueCode.id_key();
                 newUser.client_id = clientId;
-                newUser.tenant_id = tenantId;
+                // newUser.tenant_id = tenantId;
                 /*newUser.sub = cognitoUser.User.Attributes[0].Value; */
                 newUser.sub = newUser.email;
                 newUser.first_name = newUser.first_name;
@@ -194,10 +194,10 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
                 newUser.company_name = newUser.company_name;
                 newUser.account_name = newUser.account_name;
                 newUser.tenant_id_key = newUser.tenant_id_key;
-                newUser.owner_name = newUser.owner_name;
+                // newUser.owner_name = newUser.owner_name;
                 newUser.role = newUser.role;
                 newUser.tier = newUser.tier;
-                newUser.tenant_type = newUser.tenant_type;
+                // newUser.tenant_type = newUser.tenant_type;
                 
                 //var currentDateTime = new Date();
                 var currentDateTime = moment().format('MM/DD/YYYY h:mm:ss a'); 
@@ -209,8 +209,8 @@ module.exports.createNewUser = function (credentials, userPoolId, identityPoolId
                 newUser.user_last_login_datetime = currentDateTime.toString();
                 newUser.status_change_datetime = currentDateTime.toString();
                 newUser.created_datetime = currentDateTime.toString();
-                newUser.last_modified_datetime = newUser.last_modified_datetime;
-                newUser.marked_for_deletion_datetime = newUser.marked_for_deletion_datetime;
+                newUser.last_modified_datetime = currentDateTime.toString();
+                newUser.marked_for_deletion_datetime = null;
                 newUser.marked_for_deletion_by_user = newUser.marked_for_deletion_by_user;
 
                 

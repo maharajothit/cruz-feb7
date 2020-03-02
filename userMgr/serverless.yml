@@ -112,26 +112,78 @@ resources:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:
-          - AttributeName: tenant_id
-            AttributeType: S
+          - AttributeName: tenant_id_key
+            AttributeType: "N"
           - AttributeName: id
             AttributeType: S
+          # - AttributeName: id_key
+          #   AttributeType: "N"
+          # - AttributeName: identity_pool_Id
+          #   AttributeType: S
+          # - AttributeName: user_pool_Id
+          #   AttributeType: S
+          # - AttributeName: accountName
+          #   AttributeType: S
+          # - AttributeName: client_id
+          #   AttributeType: S
+          # - AttributeName: company_name
+          #   AttributeType: S
+          # - AttributeName: first_name
+          #   AttributeType: S
+          # - AttributeName: last_name
+          #   AttributeType: S
+          # - AttributeName: email
+          #   AttributeType: S
+          # - AttributeName: role
+          #   AttributeType: S
+          # - AttributeName: sub
+          #   AttributeType: S
+          # - AttributeName: tier
+          #   AttributeType: S
+          # - AttributeName: user_name
+          #   AttributeType: S
+          # - AttributeName: user_alias
+          #   AttributeType: S
+          # - AttributeName: user_photo_location
+          #   AttributeType: S
+          # - AttributeName: user_last_login_datetime
+          #   AttributeType: S
+          # - AttributeName: status
+          #   AttributeType: S
+          # - AttributeName: status_change_datetime
+          #   AttributeType: S
+          # - AttributeName: created_datetime
+          #   AttributeType: S
+          # - AttributeName: created_by_user
+          #   AttributeType: S
+          # - AttributeName: last_modified_datetime
+          #   AttributeType: S
+          # - AttributeName: last_modified_by_user
+          #   AttributeType: S
+          # - AttributeName: marked_for_deletion_datetime
+          #   AttributeType: S
+          # - AttributeName: marked_for_deletion_by_user
+          #   AttributeType: S
         KeySchema:
-          - AttributeName: tenant_id
+          - AttributeName: tenant_id_key
             KeyType: HASH
           - AttributeName: id
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 10
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
         TableName: ${self:custom.table.user}
         GlobalSecondaryIndexes:
-          - IndexName: UserNameIndex
+          - IndexName: UserIndex
             KeySchema:
-              - AttributeName: id
+              - AttributeName: tenant_id_key
                 KeyType: HASH
+              # - AttributeName: user_name
+              #   KeyType: RANGE
+              # - AttributeName: user_alias
+              #   KeyType: RANGE
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
-              ReadCapacityUnits: 10
-              WriteCapacityUnits: 10
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5

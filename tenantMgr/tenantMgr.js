@@ -13,7 +13,7 @@ const cognitoUsers = require('../libs/cognito-user.js');
 const tmCommon = require('./tenantMgrCommon');
 const RequestHelper = require('../libs/request-helper');
 const serviceDiscovery = require('../serviceDiscovery/serviceDiscovery-helper');
-
+const sharedFuction = require('../userMgr/sharedfunctions.js');
 // Configure AWS Region
 AWS.config.update({region: configuration.aws_region});
 
@@ -211,7 +211,10 @@ class tenantMgr {
                                                       "company_name=:company_name, " +
                                                       "account_name=:account_name, " +
                                                       "owner_name=:owner_name, " +
+                                                      "tenant_type=:tenant_type, "+
+                                                      "tenant_alias=:tenant_alias, "+
                                                       "tier=:tier, " +
+                                                      "tenant_name=:tenant_name, "+
                                                       "#status=:status",
                        ExpressionAttributeNames:  {
                            '#status': 'status'
@@ -221,6 +224,9 @@ class tenantMgr {
                            ":account_name": tenant.account_name,
                            ":owner_name":   tenant.owner_name,
                            ":tier":        tenant.tier,
+                           ":tenant_type": tenant.tenant_type,
+                           ":tenant_name": tenant.tenant_name,
+                           ":tenant_alias": tenant.tenant_alias,
                            ":status":      tenant.status
                        },
                        ReturnValues:              "UPDATED_NEW"
@@ -248,25 +254,25 @@ class tenantMgr {
                             else {
                                 console.log("========UPDATEW ITEM======"+JSON.stringify(tenantItem));
                                 
-                                var userSchema = {
-                                    TableName : configuration.table.user,
-                                    KeySchema: [
-                                        { AttributeName: "id", KeyType: "HASH"},
-                                        { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
-                                    ],
-                                    AttributeDefinitions: [
-                                        { AttributeName: "id", AttributeType: "S" },
-                                        { AttributeName: "tenant_id_key", AttributeType: "N" }
-                                    ],
-                                    ProvisionedThroughput: {
-                                        ReadCapacityUnits: 10,
-                                        WriteCapacityUnits: 10
-                                    }
-                                };
+                                // var userSchema = {
+                                //     TableName : configuration.table.user,
+                                //     KeySchema: [
+                                //         { AttributeName: "id", KeyType: "HASH"},
+                                //         { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
+                                //     ],
+                                //     AttributeDefinitions: [
+                                //         { AttributeName: "id", AttributeType: "S" },
+                                //         { AttributeName: "tenant_id_key", AttributeType: "N" }
+                                //     ],
+                                //     ProvisionedThroughput: {
+                                //         ReadCapacityUnits: 10,
+                                //         WriteCapacityUnits: 10
+                                //     }
+                                // };
 
-                                var dynamoHelper1 = new DynamoDBHelper(userSchema, credentials, configuration);
+                                var dynamoHelper1 = new DynamoDBHelper(sharedFuction.userSchema, credentials, configuration);
                                 var searchParams = {       
-                                    TableName: userSchema.TableName,
+                                    TableName: sharedFuction.userSchema.TableName,
                                     FilterExpression: "email = :email",
                                     ExpressionAttributeValues: {
                                         ":email" : tenantItem.email
@@ -295,7 +301,7 @@ class tenantMgr {
                                                 UpdateExpression:          "set " +
                                                                                "company_name=:company_name, " +
                                                                                "account_name=:account_name, " +
-                                                                               "owner_name=:owner_name, " +
+                                                                            //    "owner_name=:owner_name, " +
                                                                                "#status=:status",
                                                                                
                                                 ExpressionAttributeNames:  {
@@ -304,7 +310,7 @@ class tenantMgr {
                                                 ExpressionAttributeValues: {
                                                     ":company_name": tenant.company_name,
                                                     ":account_name": tenant.account_name,
-                                                    ":owner_name":   tenant.owner_name,
+                                                    // ":owner_name":   tenant.owner_name,
                                                     ":status":      tenant.status
                                                 },
                                                 ReturnValues:              "UPDATED_NEW"
@@ -471,25 +477,25 @@ function getAllUsersAndDelete(tenant, credentials, userPoolId){
     return new Promise(function (resolve, reject) {
         console.log("===========Tenanat======"+JSON.stringify(tenant));
         
-        var userSchema = {
-            TableName : configuration.table.user,
-            KeySchema: [
-                { AttributeName: "id", KeyType: "HASH"},
-                { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
-            ],
-            AttributeDefinitions: [
-                { AttributeName: "id", AttributeType: "S" },
-                { AttributeName: "tenant_id_key", AttributeType: "N" }
-            ],
-            ProvisionedThroughput: {
-                ReadCapacityUnits: 10,
-                WriteCapacityUnits: 10
-            }
-        };
+        // var userSchema = {
+        //     TableName : configuration.table.user,
+        //     KeySchema: [
+        //         { AttributeName: "id", KeyType: "HASH"},
+        //         { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
+        //     ],
+        //     AttributeDefinitions: [
+        //         { AttributeName: "id", AttributeType: "S" },
+        //         { AttributeName: "tenant_id_key", AttributeType: "N" }
+        //     ],
+        //     ProvisionedThroughput: {
+        //         ReadCapacityUnits: 10,
+        //         WriteCapacityUnits: 10
+        //     }
+        // };
 
-        var dynamoHelper1 = new DynamoDBHelper(userSchema, credentials, configuration);
+        var dynamoHelper1 = new DynamoDBHelper(sharedFuction.userSchema, credentials, configuration);
         var searchParams = {       
-            TableName: userSchema.TableName,
+            TableName: sharedFuction.userSchema.TableName,
             FilterExpression: "tenant_id_key = :tenant_id_key",
             ExpressionAttributeValues: {
                 ":tenant_id_key" : tenant.id_key

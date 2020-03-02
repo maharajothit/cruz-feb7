@@ -118,7 +118,7 @@ export async function createTenant(event) {
     catch(err) {
         res.error(err)
     }
-    console.log("========res.success(result)======"+result);
+    // console.log("========res.success(result)======"+result);
     
     return res.success(result);
 

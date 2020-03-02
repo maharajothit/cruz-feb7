@@ -116,6 +116,10 @@ resources:
             AttributeType: S
           - AttributeName: tenant_id_key
             AttributeType: "N"
+          # - AttributeName: entity_name
+          #   AttributeType: S
+          # - AttributeName: entity_alias
+          #   AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -130,6 +134,10 @@ resources:
             KeySchema:
               - AttributeName: id
                 KeyType: HASH
+              # - AttributeName: entity_name
+              #   KeyType: RANGE
+              # - AttributeName: entity_alias
+              #   KeyType: RANGE
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:

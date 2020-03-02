@@ -266,30 +266,30 @@ class UserMgr {
 
                     var userPoolId = getUserPoolIdFromRequest(event);
 
-                    var userSchema = {
-                        TableName : configuration.table.user,
-                        KeySchema: [
-                            { AttributeName: "tenant_id_key", KeyType: "HASH"},
-                            { AttributeName: "id", KeyType: "RANGE" }  
-                        ],
-                        AttributeDefinitions: [
-                            { AttributeName: "tenant_id_key", AttributeType: "N" },
-                            { AttributeName: "id", AttributeType: "S" }
-                        ],
-                        ProvisionedThroughput: {
-                            ReadCapacityUnits: 10,
-                            WriteCapacityUnits: 10
-                        }
-                    };
+                    // var userSchema = {
+                    //     TableName : configuration.table.user,
+                    //     KeySchema: [
+                    //         { AttributeName: "tenant_id_key", KeyType: "HASH"},
+                    //         { AttributeName: "id", KeyType: "RANGE" }  
+                    //     ],
+                    //     AttributeDefinitions: [
+                    //         { AttributeName: "tenant_id_key", AttributeType: "N" },
+                    //         { AttributeName: "id", AttributeType: "S" }
+                    //     ],
+                    //     ProvisionedThroughput: {
+                    //         ReadCapacityUnits: 10,
+                    //         WriteCapacityUnits: 10
+                    //     }
+                    // };
 
-                    var dynamoHelper = new DynamoDBHelper(userSchema, credentials, configuration);
+                    var dynamoHelper = new DynamoDBHelper(sharedFunctions.userSchema, credentials, configuration);
 
                     console.log("==========USER GET USER BY ID dynamoHelper====="+JSON.stringify(dynamoHelper));
 
                     console.log("==========USER GET USER BY ID= userSchema===="+JSON.stringify(event));
 
                     var searchParams = {       
-                        TableName: userSchema.TableName,
+                        TableName: sharedFunctions.userSchema.TableName,
                         FilterExpression: "tenant_id_key = :tenant_id_key",
                         ExpressionAttributeValues: {
                             ":tenant_id_key": JSON.parse(event.pathParameters.id)
@@ -436,25 +436,25 @@ updateUser(event){
                 console.log("=======user-for-create-new-user======"+JSON.stringify(user));
                 console.log("=======credentials-for-create-new-user======"+JSON.stringify(credentials));
 
-                var userSchema = {
-                    TableName : configuration.table.user,
-                    KeySchema: [
-                        { AttributeName: "tenant_id_key", KeyType: "HASH"},
-                        { AttributeName: "id", KeyType: "RANGE" }  
-                    ],
-                    AttributeDefinitions: [
-                        { AttributeName: "tenant_id_key", AttributeType: "N" },
-                        { AttributeName: "id", AttributeType: "S" }
-                    ],
-                    ProvisionedThroughput: {
-                        ReadCapacityUnits: 10,
-                        WriteCapacityUnits: 10
-                    }
-                };
-                var dynamoHelper = new DynamoDBHelper(userSchema, credentials, configuration);
+                // var userSchema = {
+                //     TableName : configuration.table.user,
+                //     KeySchema: [
+                //         { AttributeName: "tenant_id_key", KeyType: "HASH"},
+                //         { AttributeName: "id", KeyType: "RANGE" }  
+                //     ],
+                //     AttributeDefinitions: [
+                //         { AttributeName: "tenant_id_key", AttributeType: "N" },
+                //         { AttributeName: "id", AttributeType: "S" }
+                //     ],
+                //     ProvisionedThroughput: {
+                //         ReadCapacityUnits: 10,
+                //         WriteCapacityUnits: 10
+                //     }
+                // };
+                var dynamoHelper = new DynamoDBHelper(sharedFunctions.userSchema, credentials, configuration);
 
                 var searchParams = {       
-                    TableName: userSchema.TableName,
+                    TableName: sharedFunctions.userSchema.TableName,
                     FilterExpression: "id_key = :id_key",
                     ExpressionAttributeValues: {
                         ":id_key" : user.id_key
@@ -491,7 +491,8 @@ updateUser(event){
                                                                    "last_name=:last_name, " +
                                                                    "company_name=:company_name, " +
                                                                    "account_name=:account_name, " +
-                                                                   "owner_name=:owner_name, " +
+                                                                   "user_alias=:user_alias, "+
+                                                                   "user_photo_location=:user_photo_location, "+
                                                                    "tier=:tier, "+
                                                                    "#status=:status",
                                                                    
@@ -501,8 +502,9 @@ updateUser(event){
                                     ExpressionAttributeValues: {
                                         ":company_name": user.company_name,
                                         ":account_name": user.account_name,
-                                        ":owner_name":   user.owner_name,
                                         ":first_name" : user.first_name,
+                                        ":user_alias": user.user_alias,
+                                        ":user_photo_location": user.user_photo_location,
                                         ":last_name" : user.last_name,
                                         ":tier" : user.tier,
                                         ":status":      user.status
@@ -510,23 +512,23 @@ updateUser(event){
                                     ReturnValues:              "UPDATED_NEW"
                                 };
                                 console.log("----dfsadfasdf-----"+JSON.stringify(userUpdateParams))
-                                var userSchema = {
-                                    TableName : configuration.table.user,
-                                    KeySchema: [
-                                        { AttributeName: "id", KeyType: "HASH"},
-                                        { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
-                                    ],
-                                    AttributeDefinitions: [
-                                        { AttributeName: "id", AttributeType: "S" },
-                                        { AttributeName: "tenant_id_key", AttributeType: "N" }
-                                    ],
-                                    ProvisionedThroughput: {
-                                        ReadCapacityUnits: 10,
-                                        WriteCapacityUnits: 10
-                                    }
-                                };
+                                // var userSchema = {
+                                //     TableName : configuration.table.user,
+                                //     KeySchema: [
+                                //         { AttributeName: "id", KeyType: "HASH"},
+                                //         { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
+                                //     ],
+                                //     AttributeDefinitions: [
+                                //         { AttributeName: "id", AttributeType: "S" },
+                                //         { AttributeName: "tenant_id_key", AttributeType: "N" }
+                                //     ],
+                                //     ProvisionedThroughput: {
+                                //         ReadCapacityUnits: 10,
+                                //         WriteCapacityUnits: 10
+                                //     }
+                                // };
                                 // construct the helper object
-                                var dynamoHelper1 = new DynamoDBHelper(userSchema, credentials, configuration);
+                                var dynamoHelper1 = new DynamoDBHelper(sharedFunctions.userSchema, credentials, configuration);
 
                                 dynamoHelper1.getDynamoDBDocumentClient(credentials, function (error, docClient) {
 
@@ -564,25 +566,25 @@ deleteUserById(event){
             tokenManager.getCredentialsFromToken(event, function (err, credentials) {
                 // get the user pool id from the request
                 if (credentials) {
-                    var userSchema = {
-                        TableName : configuration.table.user,
-                        KeySchema: [
-                            { AttributeName: "tenant_id_key", KeyType: "HASH"},
-                            { AttributeName: "id", KeyType: "RANGE" }  
-                        ],
-                        AttributeDefinitions: [
-                            { AttributeName: "tenant_id_key", AttributeType: "N" },
-                            { AttributeName: "id", AttributeType: "S" }
-                        ],
-                        ProvisionedThroughput: {
-                            ReadCapacityUnits: 10,
-                            WriteCapacityUnits: 10
-                        }
-                    };
-                    var dynamoHelper = new DynamoDBHelper(userSchema, credentials, configuration);
+                    // var userSchema = {
+                    //     TableName : configuration.table.user,
+                    //     KeySchema: [
+                    //         { AttributeName: "tenant_id_key", KeyType: "HASH"},
+                    //         { AttributeName: "id", KeyType: "RANGE" }  
+                    //     ],
+                    //     AttributeDefinitions: [
+                    //         { AttributeName: "tenant_id_key", AttributeType: "N" },
+                    //         { AttributeName: "id", AttributeType: "S" }
+                    //     ],
+                    //     ProvisionedThroughput: {
+                    //         ReadCapacityUnits: 10,
+                    //         WriteCapacityUnits: 10
+                    //     }
+                    // };
+                    var dynamoHelper = new DynamoDBHelper(sharedFunctions.userSchema, credentials, configuration);
     
                     var searchParams = {       
-                        TableName: userSchema.TableName,
+                        TableName: sharedFunctions.userSchema.TableName,
                         FilterExpression: "id_key = :id_key",
                         ExpressionAttributeValues: {
                             ":id_key" : JSON.parse(event.pathParameters.id)
@@ -621,23 +623,23 @@ deleteUserById(event){
                                         },
                                         ReturnValues:              "UPDATED_NEW"
                                     };
-                                    var userSchema = {
-                                        TableName : configuration.table.user,
-                                        KeySchema: [
-                                            { AttributeName: "id", KeyType: "HASH"},
-                                            { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
-                                        ],
-                                        AttributeDefinitions: [
-                                            { AttributeName: "id", AttributeType: "S" },
-                                            { AttributeName: "tenant_id_key", AttributeType: "N" }
-                                        ],
-                                        ProvisionedThroughput: {
-                                            ReadCapacityUnits: 10,
-                                            WriteCapacityUnits: 10
-                                        }
-                                    };
+                                    // var userSchema = {
+                                    //     TableName : configuration.table.user,
+                                    //     KeySchema: [
+                                    //         { AttributeName: "id", KeyType: "HASH"},
+                                    //         { AttributeName: "tenant_id_key", KeyType: "RANGE" }  
+                                    //     ],
+                                    //     AttributeDefinitions: [
+                                    //         { AttributeName: "id", AttributeType: "S" },
+                                    //         { AttributeName: "tenant_id_key", AttributeType: "N" }
+                                    //     ],
+                                    //     ProvisionedThroughput: {
+                                    //         ReadCapacityUnits: 10,
+                                    //         WriteCapacityUnits: 10
+                                    //     }
+                                    // };
                                     // construct the helper object
-                                    var dynamoHelper1 = new DynamoDBHelper(userSchema, credentials, configuration);
+                                    var dynamoHelper1 = new DynamoDBHelper(sharedFunctions.userSchema, credentials, configuration);
                                     dynamoHelper1.getDynamoDBDocumentClient(credentials, function (error, docClient) {
                                             docClient.update(userUpdateParams, function(err, data) {
                                             if (err){                                
