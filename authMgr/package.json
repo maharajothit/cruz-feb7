@@ -36,7 +36,7 @@
     "dynamodb": "^1.1.2",
     "jwk-to-pem": "^2.0.3",
     "jwt-decode": "^2.2.0",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "request": "^2.88.0",
     "source-map-support": "^0.4.18"
   }
