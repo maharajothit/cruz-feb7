@@ -25,7 +25,7 @@
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.4",
     "copy-webpack-plugin": "^4.6.0",
     "jwk-to-pem": "^2.0.1",
     "jwt-decode": "^2.2.0",
