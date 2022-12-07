@@ -32,6 +32,6 @@
     "offline": "0.0.1",
     "path": "^0.12.7",
     "request": "^2.81.0",
-    "serverless": "^1.61.3"
+    "serverless": "^3.25.1"
   }
 }
